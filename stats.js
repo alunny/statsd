@@ -69,7 +69,7 @@ config.configFile(file, function (config, oldConfig) {
       var key;
 
       for (key in counters) {
-        var value = counters[key] / (flushInterval / 1000);
+        var value = counters[key];
         var message = 'stats.' + key + ' ' + value + ' ' + ts + "\n";
         message += 'stats.counts.' + key + ' ' + counters[key] + ' ' + ts + "\n";
         statString += message;
