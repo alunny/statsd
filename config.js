@@ -1,39 +1,36 @@
 var fs  = require('fs')
-  , sys = require('sys')
+  , util = require('util')
 
-var Configurator = function (file) {
-
-  var self = this;
-  var config = {};
-  var oldConfig = {};
+function Configurator (file) {
+  var config = {},
+      oldConfig = {};
 
   this.updateConfig = function () {
-    sys.log('reading config file: ' + file);
+    console.log('reading config file: ' + file);
 
     fs.readFile(file, function (err, data) {
       if (err) { throw err; }
-      old_config = self.config;
+      old_config = this.config;
 
-      self.config = process.compile('config = ' + data, file);
-      self.emit('configChanged', self.config);
-    });
-  };
+      this.config = JSON.parse(data);
+      this.emit('configChanged', this.config);
+    }.bind(this));
+  }.bind(this);
 
   this.updateConfig();
 
   fs.watchFile(file, function (curr, prev) {
-    if (curr.ino != prev.ino) { self.updateConfig(); }
-  });
+    if (curr.ino != prev.ino) { this.updateConfig(); }
+  }.bind(this));
 };
 
-sys.inherits(Configurator, process.EventEmitter);
+util.inherits(Configurator, process.EventEmitter);
 
 exports.Configurator = Configurator;
 
-exports.configFile = function(file, callbackFunc) {
+exports.configFile = function(file, callback) {
   var config = new Configurator(file);
   config.on('configChanged', function() {
-    callbackFunc(config.config, config.oldConfig);
+    callback(config.config, config.oldConfig);
   });
 };
-
