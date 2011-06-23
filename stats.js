@@ -6,8 +6,9 @@ var dgram  = require('dgram')
 var counters = {};
 var timers = {};
 var debugInt, flushInt, server;
+var file = process.argv[2] || "config.json";
 
-config.configFile(process.argv[2], function (config, oldConfig) {
+config.configFile(file, function (config, oldConfig) {
   if (! config.debug && debugInt) {
     clearInterval(debugInt); 
     debugInt = false;
@@ -70,7 +71,7 @@ config.configFile(process.argv[2], function (config, oldConfig) {
       for (key in counters) {
         var value = counters[key] / (flushInterval / 1000);
         var message = 'stats.' + key + ' ' + value + ' ' + ts + "\n";
-        message += 'stats_counts.' + key + ' ' + counters[key] + ' ' + ts + "\n";
+        message += 'stats.counts.' + key + ' ' + counters[key] + ' ' + ts + "\n";
         statString += message;
         counters[key] = 0;
 
@@ -138,6 +139,5 @@ config.configFile(process.argv[2], function (config, oldConfig) {
 
     }, flushInterval);
   }
-
 });
 
